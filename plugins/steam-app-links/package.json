@@ -1,0 +1,8 @@
+{
+  "name": "steam-app-links",
+  "packageManager": "yarn@4.0.2",
+  "scripts": {
+    "build": "dotnet build",
+    "restore": "dotnet restore"
+  }
+}
