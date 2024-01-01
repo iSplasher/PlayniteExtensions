@@ -1,0 +1,13 @@
+﻿<Project>
+  <Import Project="../../common/common/libraryplugin.targets" />
+
+  <PropertyGroup>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <AssemblyName>VirtualLibrary</AssemblyName>
+    <AssemblyTitle>Virtual Library</AssemblyTitle>
+
+    <TargetFramework>net462-windows</TargetFramework>
+    <ProjectGuid>{3373D8FB-14B2-4B21-B5C4-96BD7E873C83}</ProjectGuid>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+</Project>

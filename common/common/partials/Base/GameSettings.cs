@@ -6,45 +6,37 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SteamAppLinks
+namespace Plugin
 {
-    public class SteamAppLinksSettings : ObservableObject
+    public partial class GameSettings : ObservableObject
     {
-        private string option1 = string.Empty;
-        private bool option2 = false;
-        private bool optionThatWontBeSaved = false;
-
-        public string Option1 { get => option1; set => SetValue(ref option1, value); }
-        public bool Option2 { get => option2; set => SetValue(ref option2, value); }
-        // Playnite serializes settings object to a JSON object and saves it as text file.
-        // If you want to exclude some property from being saved then use `JsonDontSerialize` ignore attribute.
-        [DontSerialize]
-        public bool OptionThatWontBeSaved { get => optionThatWontBeSaved; set => SetValue(ref optionThatWontBeSaved, value); }
     }
 
-    public class SteamAppLinksSettingsViewModel : ObservableObject, ISettings
+    public partial class GameSettingsViewModel : ObservableObject, ISettings
     {
-        private readonly SteamAppLinks plugin;
-        private SteamAppLinksSettings editingClone { get; set; }
+        private readonly Plugin plugin;
+        private GameSettings editingClone { get; set; }
 
-        private SteamAppLinksSettings settings;
-        public SteamAppLinksSettings Settings
+        private GameSettings prevSettings;
+        private GameSettings settings;
+        public GameSettings Settings
         {
             get => settings;
             set
             {
+                prevSettings = settings;
                 settings = value;
                 OnPropertyChanged();
             }
         }
 
-        public SteamAppLinksSettingsViewModel(SteamAppLinks plugin)
+        public GameSettingsViewModel(Plugin plugin)
         {
             // Injecting your plugin instance is required for Save/Load method because Playnite saves data to a location based on what plugin requested the operation.
             this.plugin = plugin;
 
             // Load saved settings.
-            var savedSettings = plugin.LoadPluginSettings<SteamAppLinksSettings>();
+            var savedSettings = plugin.LoadPluginSettings<GameSettings>();
 
             // LoadPluginSettings returns null if no saved data is available.
             if (savedSettings != null)
@@ -53,7 +45,7 @@ namespace SteamAppLinks
             }
             else
             {
-                Settings = new SteamAppLinksSettings();
+                Settings = new GameSettings();
             }
         }
 

@@ -1,0 +1,10 @@
+﻿Id: VirtualLibrary_3373D8FB-14B2-4B21-B5C4-96BD7E873C83
+Name: Virtual Library
+Author: iSplasher
+Version: 1.0
+Module: VirtualLibrary.dll
+Type: GameLibrary
+Icon: icon.png
+Links:
+  - Name: Github
+    Url: https://github.com/iSplasher/PlayniteExtensions

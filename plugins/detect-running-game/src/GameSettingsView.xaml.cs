@@ -13,13 +13,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SteamAppLinks
+namespace Plugin
 {
-    public partial class SteamAppLinksSettingsView : UserControl
+    public partial class GameSettingsView
     {
-        public SteamAppLinksSettingsView()
-        {
-            InitializeComponent();
-        }
     }
 }

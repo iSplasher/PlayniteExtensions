@@ -1,0 +1,11 @@
+<Project>
+    <Import Project="./common.targets" />
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="$(MSBuildThisFileDirectory)/partials/Base/**/*.cs" />
+        <Compile Include="$(MSBuildThisFileDirectory)/partials/LibraryPlugin/**/*.cs" />
+    </ItemGroup>
+</Project>

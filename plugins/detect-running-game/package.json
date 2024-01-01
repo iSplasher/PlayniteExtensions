@@ -1,0 +1,11 @@
+{
+  "name": "detect-running-game",
+  "packageManager": "yarn@4.0.2",
+  "scripts": {
+    "build:trace": "dotnet publish -c Dev",
+    "build": "dotnet publish -c Debug",
+    "restore": "dotnet restore",
+    "release": "dotnet publish -c Release",
+    "clean": "dotnet clean"
+  }
+}

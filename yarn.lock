@@ -5,14 +5,20 @@ __metadata:
   version: 8
   cacheKey: 10c0
 
+"detect-running-game@workspace:plugins/detect-running-game":
+  version: 0.0.0-use.local
+  resolution: "detect-running-game@workspace:plugins/detect-running-game"
+  languageName: unknown
+  linkType: soft
+
 "playnite@workspace:.":
   version: 0.0.0-use.local
   resolution: "playnite@workspace:."
   languageName: unknown
   linkType: soft
 
-"steam-app-links@workspace:plugins/steam-app-links":
+"virtual-library@workspace:plugins/virtual-library":
   version: 0.0.0-use.local
-  resolution: "steam-app-links@workspace:plugins/steam-app-links"
+  resolution: "virtual-library@workspace:plugins/virtual-library"
   languageName: unknown
   linkType: soft

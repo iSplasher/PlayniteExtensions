@@ -1,0 +1,94 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <Authors>iSplasher</Authors>
+        <AssemblyCopyright>Copyright © 2024</AssemblyCopyright>
+
+        <RootNamespace>$(AssemblyName)</RootNamespace>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+
+        <TargetFramework>net462-windows</TargetFramework>
+        <FileAlignment>512</FileAlignment>
+        <Deterministic>true</Deterministic>
+        <UseWPF>true</UseWPF>
+
+        <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+        <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+        <PublishDir>../../out/$(AssemblyName)</PublishDir>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AssemblyMetadata Include="PluginId" Value="$(ProjectGuid)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="PlayniteSDK" Version="6.11.0" />
+        <Reference Include="System.Management" />
+    </ItemGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE;DEV</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="$(MSBuildThisFileDirectory)/src/**/*.cs" />
+        <Compile Include="$(MSBuildProjectDirectory)/src/**/*.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="$(MSBuildProjectDirectory)/extension.yaml">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="$(MSBuildProjectDirectory)/packages.config" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="$(MSBuildProjectDirectory)/Localization\*.xaml">
+            <Generator>MSBuild:Compile</Generator>
+            <SubType>Designer</SubType>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="$(MSBuildProjectDirectory)/icon.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+
+    <!-- CUSTOM PROPERTIES (referenced in tasks below) -->
+
+    <PropertyGroup>
+        <ProgramExeName>Playnite.DesktopApp.exe</ProgramExeName>    <!-- This is the name of the program executable -->
+        <ProgramExePath>$(APPDATA)\..\Local\Playnite\Playnite.DesktopApp.exe</ProgramExePath>    <!-- This is the path to
+      the program executable -->
+        <RestartProgram>true</RestartProgram>
+    </PropertyGroup>
+
+    <!-- PROGRAM STUFF -->
+
+    <Target Condition="'$(RestartProgram)' == 'true'" Name="KillProgram" BeforeTargets="Build">
+        <Message Importance="High" Text="Killing program $(ProgramExeName)" />
+        <Exec ToolExe="cmd.exe" Command='start cmd.exe /c "taskkill /f /t /im $(ProgramExeName) 2>nul"' />
+    </Target>
+
+    <Target Condition="'$(RestartProgram)' == 'true'" Name="StartProgram" AfterTargets="Publish">
+        <Message Importance="High" Text='Starting program "$(ProgramExePath)" (Ctrl + C to quit)' />
+        <Message Importance="High" Text='----------- Program Output -----------' />
+        <Exec ToolExe="cmd.exe" Command='"$(ProgramExePath)"' />
+    </Target>
+</Project>

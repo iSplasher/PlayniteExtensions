@@ -2,7 +2,8 @@
   "name": "playnite",
   "packageManager": "yarn@4.0.2",
   "workspaces": [
-    "plugins/*"
+    "plugins/*",
+    "common/*"
   ],
   "scripts": {
     "run:steam-app-links": "yarn plugins/steam-app-links"
