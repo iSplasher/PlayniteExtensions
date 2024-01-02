@@ -11,6 +11,14 @@ using System.Windows.Controls;
 
 namespace Plugin
 {
+
+
+    static partial class PartialProperties
+    {
+        public static bool HasClient { get; set; } = false;
+    }
+
+
     public partial class Plugin : LibraryPlugin
     {
 
@@ -24,14 +32,26 @@ namespace Plugin
         }
 
         // Implementing Client adds ability to open it via special menu in playnite.
-        public override LibraryClient Client { get; } = new PluginClient();
+        public override LibraryClient Client
+        {
+            get
+            {
+                if (PartialProperties.HasClient)
+                {
+                    return new PluginClient();
+                }
+
+                return null;
+            }
+        }
 
 
         partial void PartialPluginSetup(IPlayniteAPI API)
         {
             Properties = new LibraryPluginProperties
             {
-                HasSettings = true
+                HasSettings = PartialProperties.HasSettings,
+
             };
         }
 
@@ -52,6 +72,20 @@ namespace Plugin
             return games;
         }
 
+
+        partial void ImportGamesPartial(ref IEnumerable<Game> games, LibraryImportGamesArgs args);
+
+        public override IEnumerable<Game> ImportGames(LibraryImportGamesArgs args)
+        {
+            IEnumerable<Game> games = new List<Game>();
+
+            using (Common.GuardedAction.Call(() =>
+           {
+               ImportGamesPartial(ref games, args);
+           })) { }
+
+            return games;
+        }
 
 
     }

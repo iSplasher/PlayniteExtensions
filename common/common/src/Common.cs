@@ -14,14 +14,26 @@ using System.Reflection;
 using System.Security.Permissions;
 using System.Security.Principal;
 using Playnite.SDK;
+using System.Threading.Tasks;
+using Playnite.SDK.Events;
+using Playnite.SDK.Models;
+using Playnite.SDK.Plugins;
+using System.Threading;
 
 namespace Plugin
 {
+    using PlaynitePlugin = Playnite.SDK.Plugins.Plugin;
+
+    static partial class PartialProperties
+    {
+    }
+
     public partial class Plugin
     {
         public static readonly ILogger log = LogManager.GetLogger();
 
         static public IPlayniteAPI API { get; private set; }
+        static public Plugin plugin { get; private set; }
 
         public override Guid Id
         {
@@ -33,9 +45,17 @@ namespace Plugin
             }
         }
 
+        static Plugin()
+        {
+            ApplyPartialProps();
+        }
+
+        static partial void ApplyPartialProps();
+
         partial void BaseSetup(IPlayniteAPI api)
         {
             API = api;
+            plugin = this;
 
 #if DEV
             // Force exceptions to be in English
@@ -45,7 +65,6 @@ namespace Plugin
             var ass = Meta.AssemblyUtils.GetAssembly();
 
             log.Debug($"Initializing {Meta.AssemblyUtils.GetTitle(ass)} v{Meta.AssemblyUtils.GetVersion(ass)}");
-
         }
     }
 
@@ -54,7 +73,6 @@ namespace Plugin
 
         static public class AssemblyUtils
         {
-
             static public Assembly GetAssembly()
             {
                 return typeof(Plugin).Assembly;
@@ -103,8 +121,219 @@ namespace Plugin
 
     namespace Common
     {
+        using RequestMetadataCallback = Action<Game, MetadataRequestOptions, OnDemandMetadataProvider, GetMetadataFieldArgs>;
 
-        class Path
+
+
+        static class PluginUtils
+        {
+            public static readonly ILogger log = LogManager.GetLogger();
+
+            public static MetadataField[] GetEmptyMetadataFields(Game game)
+            {
+                var fields = (MetadataField[])Enum.GetValues(typeof(MetadataField));
+
+                return fields.Where(f =>
+                {
+                    switch (f)
+                    {
+                        case MetadataField.Name:
+                            {
+                                return string.IsNullOrEmpty(game.Name);
+                            }
+                        case MetadataField.Description:
+                            {
+                                return string.IsNullOrEmpty(game.Description);
+                            }
+                        case MetadataField.Developers:
+                            {
+                                return game.Developers == null || game.Developers.Count == 0;
+                            }
+                        case MetadataField.Publishers:
+                            {
+                                return game.Publishers == null || game.Publishers.Count == 0;
+                            }
+                        case MetadataField.ReleaseDate:
+                            {
+                                return game.ReleaseDate == null;
+                            }
+                        case MetadataField.CriticScore:
+                            {
+                                return game.CriticScore == null;
+                            }
+                        case MetadataField.CommunityScore:
+                            {
+                                return game.CommunityScore == null;
+                            }
+                        case MetadataField.Genres:
+                            {
+                                return game.Genres == null || game.Genres.Count == 0;
+                            }
+                        case MetadataField.Tags:
+                            {
+                                return game.Tags == null || game.Tags.Count == 0;
+                            }
+                        case MetadataField.CoverImage:
+                            {
+                                return game.CoverImage == null;
+                            }
+                        case MetadataField.Icon:
+                            {
+                                return game.Icon == null;
+                            }
+                        case MetadataField.BackgroundImage:
+                            {
+                                return game.BackgroundImage == null;
+                            }
+                        case MetadataField.Links:
+                            {
+                                return game.Links == null || game.Links.Count == 0;
+                            }
+                        case MetadataField.Region:
+                            {
+                                return game.Regions == null || game.Regions.Count == 0;
+                            }
+                        case MetadataField.AgeRating:
+                            {
+                                return game.AgeRatings == null || game.AgeRatings.Count == 0;
+                            }
+                        case MetadataField.Platform:
+                            {
+                                return game.Platforms == null || game.Platforms.Count == 0;
+                            }
+                        case MetadataField.Features:
+                            {
+                                return game.Features == null || game.Features.Count == 0;
+                            }
+                        case MetadataField.Series:
+                            {
+                                return game.Series == null || game.Series.Count == 0;
+                            }
+                        case MetadataField.InstallSize:
+                            {
+                                return game.InstallSize == null;
+                            }
+                        default:
+                            return false;
+                    }
+                }).ToArray();
+
+            }
+
+            public static void TriggerLibraryUpdated(PlaynitePlugin plugin)
+            {
+                log.Trace($"Calling OnLibraryUpdated handler for {plugin.Id}");
+                Task.Run(() =>
+                {
+                    using (GuardedAction.Call(() =>
+                   {
+                       plugin.OnLibraryUpdated(new OnLibraryUpdatedEventArgs { });
+                   })) { }
+                });
+            }
+
+            public static void TriggerLibraryUpdated()
+            {
+                foreach (var plugin in Plugin.API.Addons.Plugins)
+                {
+                    TriggerLibraryUpdated(plugin);
+                }
+            }
+
+            async public static Task RequestMetadata(PlaynitePlugin plugin, MetadataRequestOptions opts, GetMetadataFieldArgs args, RequestMetadataCallback callback)
+            {
+                await Task.Run(() =>
+                {
+                    using (GuardedAction.Call(() =>
+                {
+                    if (!typeof(MetadataPlugin).IsAssignableFrom(plugin.GetType()))
+                    {
+                        throw new Exception("Plugin is not a MetadataPlugin");
+                    }
+
+                    var plug = plugin as MetadataPlugin;
+                    var game = opts.GameData;
+
+                    log.Trace($"Calling GetMetadataProvider handler for {plugin.Id}");
+                    var provider = plug.GetMetadataProvider(opts);
+                    callback(game, opts, provider, args);
+                })) { }
+                });
+            }
+            async public static Task RequestMetadata(PlaynitePlugin plugin, Game game, RequestMetadataCallback callback, bool backgroundDownload = true)
+            {
+                var opts = new MetadataRequestOptions(game, backgroundDownload);
+                var args = new GetMetadataFieldArgs();
+                await RequestMetadata(plugin, opts, args, callback);
+            }
+
+
+            async public static Task RequestMetadata(MetadataRequestOptions opts, RequestMetadataCallback callback, bool backgroundDownload = true)
+            {
+                var args = new GetMetadataFieldArgs();
+                TaskFactory factory = new TaskFactory(args.CancelToken);
+                var tasks = new List<Task>();
+
+                foreach (var plugin in Plugin.API.Addons.Plugins)
+                {
+                    if (typeof(MetadataPlugin).IsAssignableFrom(plugin.GetType()))
+                    {
+                        log.Debug($"type: {plugin.GetType().Name}");
+
+                        tasks.Add(factory.StartNew(
+                            async () => await RequestMetadata(plugin, opts, args, callback), args.CancelToken
+                            ));
+                    }
+                }
+
+                await factory.ContinueWhenAll(tasks.ToArray(), (t) =>
+                {
+                    if (args.CancelToken.IsCancellationRequested)
+                    {
+                        log.Trace("Metadata request cancelled");
+                    }
+                    else
+                    {
+                        log.Trace("Metadata request completed");
+                    }
+                });
+            }
+
+            async public static Task RequestMetadata(Game game, RequestMetadataCallback callback, bool backgroundDownload = true)
+            {
+                var args = new GetMetadataFieldArgs();
+                TaskFactory factory = new TaskFactory(args.CancelToken);
+                var tasks = new List<Task>();
+
+                foreach (var plugin in Plugin.API.Addons.Plugins)
+                {
+                    if (typeof(MetadataPlugin).IsAssignableFrom(plugin.GetType()))
+                    {
+                        log.Debug($"type: {plugin.GetType().Name}");
+                        var opts = new MetadataRequestOptions(game, backgroundDownload);
+                        tasks.Add(factory.StartNew(async () =>
+                                            {
+                                                await RequestMetadata(plugin, opts, args, callback);
+                                            }, args.CancelToken));
+                    }
+                }
+
+                await factory.ContinueWhenAll(tasks.ToArray(), (t) =>
+                {
+                    if (args.CancelToken.IsCancellationRequested)
+                    {
+                        log.Trace("Metadata request cancelled");
+                    }
+                    else
+                    {
+                        log.Trace("Metadata request completed");
+                    }
+                });
+            }
+
+        }
+
+        static class PathUtils
         {
             public static string CommonRoot(string path1, string path2, bool caseSensitive = false)
             {
@@ -137,6 +366,18 @@ namespace Plugin
                 }
 
                 return path1.Substring(0, idx);
+            }
+        }
+
+        static class UiUtils
+        {
+            static public void Call(Action callback)
+            {
+                Dispatch(callback);
+            }
+            static public void Dispatch(Action callback)
+            {
+                Plugin.API.MainView.UIDispatcher.Invoke(callback);
             }
         }
 

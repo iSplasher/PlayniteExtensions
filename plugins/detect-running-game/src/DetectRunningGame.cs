@@ -698,7 +698,7 @@ namespace Plugin
                 }
 
                 // Is in game directory
-                if (!String.IsNullOrEmpty(gameDir) && Common.Path.CommonRoot(gameDir, info.Path) == gameDir)
+                if (!String.IsNullOrEmpty(gameDir) && Common.PathUtils.CommonRoot(gameDir, info.Path) == gameDir)
                 {
                     return true;
                 }
