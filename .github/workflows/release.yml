@@ -41,10 +41,10 @@ jobs:
           
       - name: Read previous tag
         run: |
-          if [ git describe --tags --match='${{ env.PLUGIN_ID }}-v*' HEAD^ >/dev/null 2>&1]; then
+          if [git describe --tags --match='${{ env.PLUGIN_ID }}-v*' HEAD^ >/dev/null 2>&1]; then
             echo "PREVIOUS_TAGNAME=$(git describe --tags --abbrev=0 --match='${{ env.PLUGIN_ID }}-v*' HEAD^)" >> $GITHUB_ENV
           else
-            echo "PREVIOUS_TAGNAME='' >> $GITHUB_ENV
+            echo "PREVIOUS_TAGNAME=''" >> $GITHUB_ENV
           fi
 
       - name: ENV variables
