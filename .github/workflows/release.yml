@@ -92,7 +92,7 @@ jobs:
           restore-keys: node_modules- # Take any latest cache if failed to find it for current lock file
 
       - name: Install dependencies
-        run: yarn install --immutable-cache
+        run: yarn install --immutable
 
       - name: Install dependencies
         working-directory: ${{ matrix.plugindir }}
