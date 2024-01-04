@@ -119,19 +119,17 @@ jobs:
           config: cliff.toml
           args: --verbose --latest --strip header --include-path ${{ matrix.plugindir }}/**/* ${{ env.PREVIOUS_TAGNAME }}..
         env:
-          OUTPUT: "CHANGELOG.md"
+          OUTPUT: "${{ matrix.plugindir }}/CHANGELOG.md"
           
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.TAG_NAME }}
-          name: ${{ env.TAG_NAME }}
+          name: ${{ env.PLUGIN_NAME }} v${{ env.PLUGIN_VERSION }}
           body: ${{ steps.changes.outputs.content }}
           draft: false
           prerelease: false
           fail_on_unmatched_files: true
           files: |
-            main.js
-            styles.css
-            manifest.json
+            out/*.pext
