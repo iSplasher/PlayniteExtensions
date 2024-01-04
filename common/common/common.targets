@@ -25,6 +25,8 @@
     <ItemGroup>
         <PackageReference Include="PlayniteSDK" Version="6.11.0" />
         <Reference Include="System.Management" />
+        <Reference Include="System.Web" />
+        <Reference Include="System.Net.Http" />
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
