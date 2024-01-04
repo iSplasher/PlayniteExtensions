@@ -22,6 +22,7 @@ jobs:
         shell: bash
     permissions:
       contents: write
+      actions: write
     steps:
       - uses: actions/checkout@v3
         with:
@@ -34,6 +35,7 @@ jobs:
       - name: Read manifest
         working-directory: ${{ matrix.plugindir }}
         run: |
+          echo "CWD=$(pwd)"
           echo "PLUGIN_ID=$(yq '.Id' .\extension.yaml)" >> $GITHUB_ENV
           echo "PLUGIN_NAME=$(yq '.Name' .\extension.yaml)" >> $GITHUB_ENV
           echo "PLUGIN_VERSION=$(yq '.Version' .\extension.yaml)" >> $GITHUB_ENV
@@ -63,11 +65,14 @@ jobs:
           git fetch --tags &> /dev/null
           if git rev-parse ${{ env.TAG_NAME }} >/dev/null 2>&1; then
               echo "Tag ${{ env.TAG_NAME }} already exists; Use [force-release] to skip check."
-              exit 1
+              gh run cancel ${{ github.run_id }}
+              gh run watch ${{ github.run_id }}
           else
               echo "Will create tag ${{ env.TAG_NAME }} on release."
               echo "PUSH_TAG=true" >> $GITHUB_ENV
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
       - uses: actions/setup-dotnet@v3
         with:
