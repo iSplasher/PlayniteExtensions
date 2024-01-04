@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "dependencies": {
+    ".NETFramework,Version=v4.6.2": {
+      "PlayniteSDK": {
+        "type": "Direct",
+        "requested": "[6.11.0, )",
+        "resolved": "6.11.0",
+        "contentHash": "1y8GoRDRAYFSPjEI3BT4JjwlcZKUfD6tvi9ZnHa1pNZ1w/l6GvM10ACLKN64VObVKsmdMl7fwkg3FzzpeteCmg=="
+      }
+    }
+  }
+}

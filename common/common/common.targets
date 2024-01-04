@@ -13,6 +13,7 @@
         <Deterministic>true</Deterministic>
         <UseWPF>true</UseWPF>
 
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
         <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
         <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
         <PublishDir>../../out/$(AssemblyName)</PublishDir>
