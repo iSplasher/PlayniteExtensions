@@ -129,6 +129,7 @@ jobs:
             git config --local user.email "actions@github.com"
             git add ${{ matrix.plugindir }}/CHANGELOG.md
             git commit -m "Update CHANGELOG.md"
+            git pull
             git push
           else
             echo "No changes to CHANGELOG.md"
@@ -141,6 +142,7 @@ jobs:
           git config --local user.email "actions@github.com"
           git commit --allow-empty -m "Release ${{ env.TAG_NAME }}"
           git tag ${{ env.TAG_NAME }}
+          git pull
           git push
           git push origin ${{ env.TAG_NAME }}
 
