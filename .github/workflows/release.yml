@@ -17,6 +17,9 @@ jobs:
         plugindir:
           - "plugins/detect-running-game"
           - "plugins/virtual-library"
+    defaults:
+      run:
+        shell: bash
     permissions:
       contents: write
     steps:
