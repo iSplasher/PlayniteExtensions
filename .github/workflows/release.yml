@@ -49,7 +49,7 @@ jobs:
             echo "PREVIOUS_TAGNAME=''" >> $GITHUB_ENV
           fi
 
-      - name: ENV variables
+      - name: manifest ENV variables
         run: |
           echo "PLUGIN_ID=${{ env.PLUGIN_ID }}"
           echo "PLUGIN_NAME=${{ env.PLUGIN_NAME }}"
@@ -78,7 +78,6 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
           cache: true
-          cache-dependency-path: ${{ matrix.plugindir }}/packages.lock.json
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
