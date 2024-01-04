@@ -117,6 +117,10 @@ jobs:
         run: |
           ./Playnite/Toolbox.exe pack ../../out/${{ env.PLUGIN_ID }} ../../out
           
+      - name: Generate changelog
+        run: |
+          yarn git-cliff --verbose -o "${{ matrix.plugindir }}/CHANGELOG.md" --tag ${{ env.TAG_NAME }}  --include-path ${{ matrix.plugindir }}/**/*
+           
 
       - name: Commit and push changelog
         run: |
@@ -142,12 +146,8 @@ jobs:
 
       - name: Generate latest changes
         id: changes
-        uses: orhun/git-cliff-action@v2
-        with:
-          config: cliff.toml
-          args: --verbose --latest --strip header --include-path ${{ matrix.plugindir }}/**/* ${{ env.PREVIOUS_TAGNAME }}..
-        env:
-          OUTPUT: "${{ matrix.plugindir }}/CHANGELOG.md"
+        run: |
+          echo "$(yarn git-cliff --strip header --include-path ${{ matrix.plugindir }}/**/* ${{ env.PREVIOUS_TAGNAME }}..)" >> $GITHUB_OUTPUT
           
       - name: Create Release
         id: create_release

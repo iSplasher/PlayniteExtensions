@@ -6,7 +6,7 @@
     "common/*"
   ],
   "scripts": {
-    "changelog": "git-cliff --include-path plugins/virtual-library/**/* ..",
+    "git-cliff": "git-cliff",
     "ci-release": "node ./scripts/ci-release.js"
   },
   "devDependencies": {
