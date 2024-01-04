@@ -6,6 +6,10 @@
     "common/*"
   ],
   "scripts": {
-    "run:steam-app-links": "yarn plugins/steam-app-links"
+    "changelog": "git-cliff --include-path plugins/virtual-library/**/* ..",
+    "ci-release": "node ./scripts/ci-release.js"
+  },
+  "devDependencies": {
+    "git-cliff": "^1.4.0"
   }
 }

@@ -71,7 +71,6 @@
         </None>
     </ItemGroup>
 
-
     <!-- CUSTOM PROPERTIES (referenced in tasks below) -->
 
     <PropertyGroup>

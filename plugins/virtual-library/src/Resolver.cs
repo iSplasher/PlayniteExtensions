@@ -11,6 +11,42 @@ namespace Plugin
     namespace Resolver
     {
 
+        public interface IResolver
+        {
+            /*
+             * Name of the resolver
+             */
+            string Name { get; }
+
+            /*
+             * Example input patterns the resolver can match, used only to inform the user
+             */
+            string[] ExamplePatterns { get; }
+
+            /*
+             * Returns true if the resolver can match the given values.
+             */
+            bool Match(MatchOptions options);
+
+            /*
+             * Return a metadata provider for the given game. This follows the same pattern as Metadata plugins.
+             * See https://api.playnite.link/docs/tutorials/extensions/metadataPlugins.html#ondemandmetadataprovider
+             * You can return null if you don't want to provide metadata for the given game.
+             */
+            OnDemandMetadataProvider Resolve(Game game, ResolveOptions options);
+
+            /*
+             * Return a string that will be used as the game id for the given game.
+             */
+            string ResolveGameId(Game game, ResolveOptions options);
+
+            /*
+             * Return a string that will be used as the game source for the given game.
+             */
+            string ResolveGameSource(Game game, ResolveOptions options);
+        }
+
+
         public class MatchOptions
         {
             public Uri Url { get; set; } = null;
@@ -54,19 +90,6 @@ namespace Plugin
             }
         }
 
-        public interface IResolver
-        {
-            string Name { get; }
-
-            string[] ExamplePatterns { get; }
-
-            bool Match(MatchOptions options);
-
-            OnDemandMetadataProvider Resolve(Game game, ResolveOptions options);
-
-            string ResolveGameId(Game game, ResolveOptions options);
-            string ResolveGameSource(Game game, ResolveOptions options);
-        }
 
 
         static public class ResolverBuilder

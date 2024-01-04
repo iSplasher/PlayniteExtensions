@@ -1,0 +1,137 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  TOOLBOX_DOWNLOAD_URL: https://github.com/JosefNemec/Playnite/releases/download/10.32/Playnite1032.zip
+  NODE_VERSION: 18
+  DOTNET_VERSION: 8.0.x
+jobs:
+  release:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        plugindir:
+          - "plugins/detect-running-game"
+          - "plugins/virtual-library"
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # entire history is needed for the changelog
+
+      - name: Install yq
+        run: |
+          choco install yq
+
+      - name: Read manifest
+        working-directory: ${{ matrix.plugindir }}
+        run: |
+          echo "PLUGIN_ID=$(yq '.Id' .\extension.yaml)" >> $GITHUB_ENV
+          echo "PLUGIN_NAME=$(yq '.Name' .\extension.yaml)" >> $GITHUB_ENV
+          echo "PLUGIN_VERSION=$(yq '.Version' .\extension.yaml)" >> $GITHUB_ENV
+          echo "TAG_NAME=$(yq '.Id' .\extension.yaml)-v$(yq '.Version' .\extension.yaml)" >> $GITHUB_ENV
+          
+      - name: Read previous tag
+        run: |
+          echo "PREVIOUS_TAGNAME=$(git describe --tags --abbrev=0 --match='${{ env.PLUGIN_ID }}-v*' HEAD^)" >> $GITHUB_ENV
+
+      - name: ENV variables
+        run: |
+          echo "PLUGIN_ID=${{ env.PLUGIN_ID }}"
+          echo "PLUGIN_NAME=${{ env.PLUGIN_NAME }}"
+          echo "PLUGIN_VERSION=${{ env.PLUGIN_VERSION }}"
+          echo "TAG_NAME=${{ env.TAG_NAME }}"
+          echo "PREVIOUS_TAGNAME=${{ env.PREVIOUS_TAGNAME }}"
+
+        # check if tag exists and fail if not [force-release] in commit message
+      - name: Check if tag exists
+        id: check_tag
+        if: "!contains(github.event.head_commit.message, '[force-release]')"
+        run: |
+          git fetch --tags &> /dev/null
+          if git rev-parse ${{ env.TAG_NAME }} >/dev/null 2>&1; then
+              echo "Tag ${{ env.TAG_NAME }} already exists; Use [force-release] to skip check."
+              exit 1
+          else
+              echo "Will create tag ${{ env.TAG_NAME }} on release."
+              echo "PUSH_TAG=true" >> $GITHUB_ENV
+          fi
+        
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          include-prerelease: true
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node_modules-${{hashFiles('package-lock.json')}}
+          restore-keys: node_modules- # Take any latest cache if failed to find it for current lock file
+
+      - name: Install dependencies
+        run: yarn install --immutable-cache
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.plugindir }}
+        run: yarn restore
+
+      - name: Build & Release
+        working-directory: ${{ matrix.plugindir }}
+        run: |
+          yarn release
+
+      - name: Commit and push changelog
+        run: |
+          if ! git diff --quiet ${{ matrix.plugindir }}/CHANGELOG.md; then
+            git config --local user.name "Github Actions"
+            git config --local user.email "actions@github.com"
+            git add ${{ matrix.plugindir }}/CHANGELOG.md
+            git commit -m "Update CHANGELOG.md"
+            git push
+          else
+            echo "No changes to CHANGELOG.md"
+          fi
+
+      - name: Create tag and push
+        if: env.PUSH_TAG == 'true'
+        run: |
+          git config --local user.name "Github Actions"
+          git config --local user.email "actions@github.com"
+          git commit --allow-empty -m "Release ${{ env.TAG_NAME }}"
+          git tag ${{ env.TAG_NAME }}
+          git push
+          git push origin ${{ env.TAG_NAME }}
+
+      - name: Generate latest changes
+        id: changes
+        uses: orhun/git-cliff-action@v2
+        with:
+          config: cliff.toml
+          args: --verbose --latest --strip header --include-path ${{ matrix.plugindir }}/**/* ${{ env.PREVIOUS_TAGNAME }}..
+        env:
+          OUTPUT: "CHANGELOG.md"
+          
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          name: ${{ env.TAG_NAME }}
+          body: ${{ steps.changes.outputs.content }}
+          draft: false
+          prerelease: false
+          fail_on_unmatched_files: true
+          files: |
+            main.js
+            styles.css
+            manifest.json

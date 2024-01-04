@@ -1,10 +1,12 @@
-﻿Id: DetectRunningGame_4FDF1E89-5BC3-4C72-8FDA-0D580E7A5D5F
+﻿Id: DetectRunningGame
 Name: Detect Running Game
 Author: iSplasher
-Version: 1.0
+Version: 0.1
 Module: DetectRunningGame.dll
 Type: GenericPlugin
 Icon: icon.png
 Links:
   - Name: Github
     Url: https://github.com/iSplasher/PlayniteExtensions
+  - Name: Donate/Sponsor
+    Url: https://github.com/sponsors/iSplasher
