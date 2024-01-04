@@ -98,10 +98,25 @@ jobs:
         working-directory: ${{ matrix.plugindir }}
         run: dotnet restore --locked-mode
 
-      - name: Build & Release
+      - name: Build
         working-directory: ${{ matrix.plugindir }}
         run: |
           yarn release
+
+      - name: Download Toolbox
+        working-directory: ${{ matrix.plugindir }}
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri $env:TOOLBOX_DOWNLOAD_URL -OutFile "Playnite.zip"
+          Expand-Archive -Path "Playnite.zip" -DestinationPath "Playnite"
+          Remove-Item "Playnite.zip"
+
+      - name: Package
+        shell: pwsh
+        working-directory: ${{ matrix.plugindir }}
+        run: |
+          ./Playnite/Toolbox.exe pack ../../out/${{ env.PLUGIN_ID }} ../../out
+          
 
       - name: Commit and push changelog
         run: |
