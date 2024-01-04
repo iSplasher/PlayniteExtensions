@@ -147,7 +147,7 @@ jobs:
       - name: Generate latest changes
         id: changes
         run: |
-          echo "$(yarn git-cliff --strip header --include-path ${{ matrix.plugindir }}/**/* ${{ env.PREVIOUS_TAGNAME }}..)" >> $GITHUB_OUTPUT
+          yarn git-cliff -o CHANGES --strip header --include-path ${{ matrix.plugindir }}/**/* ${{ env.PREVIOUS_TAGNAME }}..
           
       - name: Create Release
         id: create_release
@@ -155,7 +155,7 @@ jobs:
         with:
           tag_name: ${{ env.TAG_NAME }}
           name: ${{ env.PLUGIN_NAME }} v${{ env.PLUGIN_VERSION }}
-          body: ${{ steps.changes.outputs.content }}
+          body_path: CHANGES
           draft: false
           prerelease: false
           fail_on_unmatched_files: true
