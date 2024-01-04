@@ -1546,7 +1546,7 @@ namespace Plugin
 #else
         public class TimeIt : IDisposable
         {
-            public TimeIt(string name)
+            public TimeIt(string name, bool predicate = true)
             {
 
             }

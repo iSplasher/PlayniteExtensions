@@ -18,6 +18,20 @@
         <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
         <PublishDir>../../out/$(AssemblyName)</PublishDir>
     </PropertyGroup>
+    <PropertyGroup Label="CI" Condition="'$(CI)' == ''">
+        <CI>false</CI>
+        <!-- GH, CircleCI, GitLab and BitBucket already use CI -->
+        <CI
+            Condition="'$(TF_BUILD)' == 'true' or 
+                       '$(TEAMCITY_VERSION)' != '' or 
+                       '$(APPVEYOR)' != '' or 
+                       '$(BuildRunner)' == 'MyGet' or 
+                       '$(JENKINS_URL)' != '' or 
+                       '$(TRAVIS)' == 'true' or 
+                       '$(BUDDY)' == 'true' or
+                       '$(CODEBUILD_CI)' == 'true'">
+            true</CI>
+    </PropertyGroup>
 
     <ItemGroup>
         <AssemblyMetadata Include="PluginId" Value="$(ProjectGuid)" />
@@ -83,12 +97,12 @@
 
     <!-- PROGRAM STUFF -->
 
-    <Target Condition="'$(RestartProgram)' == 'true'" Name="KillProgram" BeforeTargets="Build">
+    <Target Condition="'$(RestartProgram)' == 'true' And '$(CI)' == 'false'" Name="KillProgram" BeforeTargets="Build">
         <Message Importance="High" Text="Killing program $(ProgramExeName)" />
         <Exec ToolExe="cmd.exe" Command='start cmd.exe /c "taskkill /f /t /im $(ProgramExeName) 2>nul"' />
     </Target>
 
-    <Target Condition="'$(RestartProgram)' == 'true'" Name="StartProgram" AfterTargets="Publish">
+    <Target Condition="'$(RestartProgram)' == 'true' And '$(CI)' == 'false'" Name="StartProgram" AfterTargets="Publish">
         <Message Importance="High" Text='Starting program "$(ProgramExePath)" (Ctrl + C to quit)' />
         <Message Importance="High" Text='----------- Program Output -----------' />
         <Exec ToolExe="cmd.exe" Command='"$(ProgramExePath)"' />
