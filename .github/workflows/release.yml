@@ -36,10 +36,10 @@ jobs:
         working-directory: ${{ matrix.plugindir }}
         run: |
           echo "CWD=$(pwd)"
-          echo "PLUGIN_ID=$(yq '.Id' .\extension.yaml)" >> $GITHUB_ENV
-          echo "PLUGIN_NAME=$(yq '.Name' .\extension.yaml)" >> $GITHUB_ENV
-          echo "PLUGIN_VERSION=$(yq '.Version' .\extension.yaml)" >> $GITHUB_ENV
-          echo "TAG_NAME=$(yq '.Id' .\extension.yaml)-v$(yq '.Version' .\extension.yaml)" >> $GITHUB_ENV
+          echo "PLUGIN_ID=$(yq '.Id' extension.yaml)" >> $GITHUB_ENV
+          echo "PLUGIN_NAME=$(yq '.Name' extension.yaml)" >> $GITHUB_ENV
+          echo "PLUGIN_VERSION=$(yq '.Version' extension.yaml)" >> $GITHUB_ENV
+          echo "TAG_NAME=$(yq '.Id' extension.yaml)-v$(yq '.Version' extension.yaml)" >> $GITHUB_ENV
           
       - name: Read previous tag
         run: |
