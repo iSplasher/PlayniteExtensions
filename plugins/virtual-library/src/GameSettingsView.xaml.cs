@@ -15,7 +15,11 @@ using System.Windows.Shapes;
 
 namespace Plugin
 {
-    public partial class GameSettingsView
+    public partial class GameSettingsView : UserControl
     {
+        public GameSettingsView()
+        {
+            InitializeComponent();
+        }
     }
 }

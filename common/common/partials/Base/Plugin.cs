@@ -121,6 +121,8 @@ namespace Plugin
                 GetSettingsViewPartial(view, firstRunSettings);
             })) { }
 
+            log.Warn("GetSettingsView: " + view.ToString());
+
             if (view == null)
             {
                 return base.GetSettingsView(firstRunSettings);

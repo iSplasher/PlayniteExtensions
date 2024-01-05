@@ -16,6 +16,7 @@
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
         <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
         <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+        <EnableDefaultPageItems>false</EnableDefaultPageItems>
         <PublishDir>../../out/$(AssemblyName)</PublishDir>
     </PropertyGroup>
     <PropertyGroup Label="CI" Condition="'$(CI)' == ''">
@@ -39,6 +40,19 @@
 
     <ItemGroup>
         <PackageReference Include="PlayniteSDK" Version="6.11.0" />
+        <Reference Include="PresentationCore" />
+        <Reference Include="PresentationFramework" />
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Xaml" />
+        <Reference Include="System.Xml.Linq" />
+        <Reference Include="System.Data.DataSetExtensions" />
+        <Reference Include="Microsoft.CSharp" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Net.Http" />
+        <Reference Include="System.Xml" />
+        <Reference Include="WindowsBase" />
+        <Reference Include="System.Windows.Forms" />
         <Reference Include="System.Management" />
         <Reference Include="System.Web" />
         <Reference Include="System.Net.Http" />
@@ -63,6 +77,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="$(MSBuildThisFileDirectory)/partials/Base/**/*.cs" />
         <Compile Include="$(MSBuildThisFileDirectory)/src/**/*.cs" />
         <Compile Include="$(MSBuildProjectDirectory)/src/**/*.cs" />
     </ItemGroup>
@@ -80,6 +95,24 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
+
+    <ItemGroup>
+        <Page Include="$(MSBuildProjectDirectory)/src/**/*.xaml">
+            <Generator>MSBuild:Compile</Generator>
+            <SubType>Designer</SubType>
+        </Page>
+        <Compile Update="$(MSBuildProjectDirectory)/**/*.xaml.cs" SubType="Code">
+            <DependentUpon>%(RecursiveDir)\%(Filename)</DependentUpon>
+        </Compile>
+        <!-- <Compile Update="$(MSBuildThisFileDirectory)/partials/Base/**/*.xaml.cs" SubType="Code"
+            DependentUpon="%(Filename)" /> -->
+        <!-- <Page Include="$(MSBuildThisFileDirectory)/partials/Base/**/*.xaml">
+            <SubType>Designer</SubType>
+            <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+        </Page> -->
+    </ItemGroup>
+
+
     <ItemGroup>
         <None Include="$(MSBuildProjectDirectory)/icon.png">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

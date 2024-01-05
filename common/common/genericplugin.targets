@@ -5,7 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="$(MSBuildThisFileDirectory)/partials/Base/**/*.cs" />
         <Compile Include="$(MSBuildThisFileDirectory)/partials/GenericPlugin/**/*.cs" />
     </ItemGroup>
 </Project>

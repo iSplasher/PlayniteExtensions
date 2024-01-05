@@ -50,7 +50,7 @@ The add-on currently fullfills my needs, so I can't guarantee I'll implement any
 
 Adding a new source resolver is easy.
 
-If you want to add support for a new source, you can do so by adding a new class in [`src/resolvers`](src/resolvers/) that implements the [`IResolver`](/src/Resolver.cs) interface. 
+If you want to add support for a new source, you can do so by adding a new class in [`src/resolvers`](src/resolvers/) that implements the [`IResolver`](src/Resolver.cs) interface. 
 The class will be instantiated and used through reflection, so you don't need to register it anywhere.
 
 See how the existing resolvers are implemented for reference.

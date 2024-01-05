@@ -1,0 +1,8 @@
+AddonId: VirtualLibrary
+Packages:
+  - Version: 0.0.1
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-01-05
+    PackageUrl: https://github.com/iSplasher/PlayniteExtensions/releases/download/VirtualLibrary-v0.0.1/VirtualLibrary_0_0_1.pext
+    Changelog:
+    - See release notes on GitHub: https://github.com/iSplasher/PlayniteExtensions/releases

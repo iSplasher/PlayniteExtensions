@@ -2,7 +2,7 @@
   <Import Project="../../common/common/libraryplugin.targets" />
 
   <PropertyGroup>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <AssemblyVersion>0.0.1</AssemblyVersion>
     <AssemblyName>VirtualLibrary</AssemblyName>
     <AssemblyTitle>Virtual Library</AssemblyTitle>
 

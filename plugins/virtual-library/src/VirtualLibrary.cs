@@ -346,7 +346,7 @@ namespace Plugin
 
         static partial void ApplyPartialProps()
         {
-            PartialProperties.HasSettings = false;
+            PartialProperties.HasSettings = true;
         }
 
         partial void Setup(IPlayniteAPI API)
