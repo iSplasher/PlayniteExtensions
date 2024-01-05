@@ -1,11 +1,11 @@
 # Virtual Library Playnite Add-on
 
-I wanted to add upcoming games not specifically tied to any platforms, so I made this add-on.
+I wanted to add upcoming games not specifically tied to any platforms so I made this add-on.
 
 It allows adding any game easily through a simple link/name given a [source provider](#supported-sources) supports it.
 
 Install the add-on through the usual means:
-- [Download (if you have Playnite installed)](playnite://playnite/installaddon/VirtualLibrary)
+- If you have Playnite installed, you can copy this to your browser's URL bar: `playnite://playnite/installaddon/VirtualLibrary`
 - [Playnite Add-on Database](https://playnite.link/addons.html#VirtualLibrary)
 - [Releases](https://github.com/iSplasher/PlayniteExtensions/releases)
 
